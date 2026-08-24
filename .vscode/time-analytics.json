@@ -1,0 +1,101 @@
+{
+  "version": "1.0",
+  "project": {
+    "totalFocusTime": 2609938,
+    "totalActiveTime": 442545
+  },
+  "files": {
+    "src/server.js": {
+      "pending": 229762,
+      "focus": 1055225
+    },
+    ".env": {
+      "pending": 3302,
+      "focus": 21206
+    },
+    ".gitignore": {
+      "pending": 13563,
+      "focus": 39504
+    },
+    "README.md": {
+      "pending": 0,
+      "focus": 39591
+    },
+    "src/routes/callRoutes.js": {
+      "pending": 20495,
+      "focus": 84829
+    },
+    "src/routes/leadRoutes.js": {
+      "pending": 0,
+      "focus": 1682
+    },
+    "src/routes/webhookRoutes.js": {
+      "pending": 0,
+      "focus": 60842
+    },
+    "src/controllers/callController.js": {
+      "pending": 0,
+      "focus": 13309
+    },
+    "src/controllers/webhookController.js": {
+      "pending": 0,
+      "focus": 10128
+    },
+    "src/controllers/leadController.js": {
+      "pending": 0,
+      "focus": 22788
+    },
+    "src/services/telephonyService.js": {
+      "pending": 146448,
+      "focus": 457827
+    },
+    "src/services/speechService.js": {
+      "pending": 0,
+      "focus": 16365
+    },
+    "src/services/aiService.js": {
+      "pending": 0,
+      "focus": 16734
+    },
+    "src/services/whatsappService.js": {
+      "pending": 0,
+      "focus": 20318
+    },
+    "src/services/schedularServices.js": {
+      "pending": 0,
+      "focus": 21439
+    },
+    "src/services/followupService.js": {
+      "pending": 0,
+      "focus": 53092
+    },
+    "src/ai/prompts.js": {
+      "pending": 0,
+      "focus": 18132
+    },
+    "src/ai/leadClassifier.js": {
+      "pending": 0,
+      "focus": 16063
+    },
+    "src/ai/conversationManager.js": {
+      "pending": 0,
+      "focus": 12739
+    },
+    "src/models/Lead.js": {
+      "pending": 0,
+      "focus": 12584
+    },
+    "src/utils/logger.js": {
+      "pending": 0,
+      "focus": 14753
+    },
+    "src/utils/dataParser.js": {
+      "pending": 0,
+      "focus": 27740
+    },
+    "package.json": {
+      "pending": 28975,
+      "focus": 60989
+    }
+  }
+}
