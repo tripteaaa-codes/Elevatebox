@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "project": {
-    "totalFocusTime": 10725947,
+    "totalFocusTime": 10926963,
     "totalActiveTime": 1223824
   },
   "files": {
@@ -103,7 +103,7 @@
     },
     "src/testVoice.js": {
       "pending": 280071,
-      "focus": 824093
+      "focus": 921907
     }
   }
 }
