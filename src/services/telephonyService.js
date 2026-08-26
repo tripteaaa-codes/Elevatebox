@@ -11,13 +11,7 @@ const placeCall = async (phoneNumber) => {
         const call = await client.calls.create({
             from: twilioPhoneNumber,
             to: phoneNumber,
-            twiml: `
-                <Response>
-                    <Say>
-                        Hello! This is the ElevateBox AI sales assistant.
-                    </Say>
-                </Response>
-            `
+            url: "http://demo.twilio.com/docs/voice.xml"
         });
 
         console.log("Call created:", call.sid);
@@ -30,12 +24,18 @@ const placeCall = async (phoneNumber) => {
         };
 
     } catch (error) {
-        console.error("Twilio error:", error.message);
+        console.error("========== TWILIO ERROR ==========");
+        console.error("Status:", error.status);
+        console.error("Code:", error.code);
+        console.error("Message:", error.message);
+        console.error("More info:", error.moreInfo);
+        console.error("=================================");
 
         return {
             success: false,
-            message: "Failed to place call",
-            error: error.message
+            message: error.message,
+            errorCode: error.code,
+            status: error.status
         };
     }
 };

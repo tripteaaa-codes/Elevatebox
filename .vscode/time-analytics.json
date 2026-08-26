@@ -1,8 +1,8 @@
 {
   "version": "1.0",
   "project": {
-    "totalFocusTime": 10926963,
-    "totalActiveTime": 1223824
+    "totalFocusTime": 13738272,
+    "totalActiveTime": 1484407
   },
   "files": {
     "src/server.js": {
@@ -10,8 +10,8 @@
       "focus": 1261938
     },
     ".env": {
-      "pending": 26046,
-      "focus": 731406
+      "pending": 29162,
+      "focus": 867074
     },
     ".gitignore": {
       "pending": 13563,
@@ -22,8 +22,8 @@
       "focus": 39591
     },
     "src/routes/callRoutes.js": {
-      "pending": 234051,
-      "focus": 709204
+      "pending": 469067,
+      "focus": 1292641
     },
     "src/routes/leadRoutes.js": {
       "pending": 0,
@@ -46,8 +46,8 @@
       "focus": 22788
     },
     "src/services/telephonyService.js": {
-      "pending": 353132,
-      "focus": 1504572
+      "pending": 375583,
+      "focus": 1733554
     },
     "src/services/speechService.js": {
       "pending": 0,
@@ -103,7 +103,7 @@
     },
     "src/testVoice.js": {
       "pending": 280071,
-      "focus": 921907
+      "focus": 996716
     }
   }
 }
