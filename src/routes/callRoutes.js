@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 const { placeCall } = require("../services/telephonyService");
+const { getResponse } = require("../ai/conversationManager");
 
 router.post("/start", async (req, res) => {
     try {
@@ -59,6 +60,7 @@ router.post("/twiml", (req, res) => {
                 action="${process.env.PUBLIC_URL}/api/call/process"
                 method="POST"
                 speechTimeout="auto"
+                language="en-IN"
             >
                 <Say>
                     Hello! This is the ElevateBox AI sales assistant.
@@ -76,15 +78,56 @@ router.post("/twiml", (req, res) => {
 router.post("/process", async (req, res) => {
     try {
         const speech = req.body.SpeechResult;
+        const callSid = req.body.CallSid;
 
         console.log("Customer said:", speech);
+        console.log("Call SID:", callSid);
 
         res.type("text/xml");
 
+        if (!speech) {
+            return res.send(`
+                <Response>
+                    <Gather
+                        input="speech"
+                        action="${process.env.PUBLIC_URL}/api/call/process"
+                        method="POST"
+                        speechTimeout="auto"
+                        language="en-IN"
+                    >
+                        <Say>
+                            I'm sorry, I didn't hear you.
+                            Could you please say that again?
+                        </Say>
+                    </Gather>
+
+                    <Say>
+                        Goodbye!
+                    </Say>
+                </Response>
+            `);
+        }
+
+        const aiResponse = await getResponse(callSid, speech);
+
+        console.log("AI response:", aiResponse);
+
         res.send(`
             <Response>
+                <Gather
+                    input="speech"
+                    action="${process.env.PUBLIC_URL}/api/call/process"
+                    method="POST"
+                    speechTimeout="auto"
+                    language="en-IN"
+                >
+                    <Say>
+                        ${aiResponse}
+                    </Say>
+                </Gather>
+
                 <Say>
-                    You said: ${speech}
+                    Thank you for calling ElevateBox. Goodbye!
                 </Say>
             </Response>
         `);
@@ -92,7 +135,14 @@ router.post("/process", async (req, res) => {
     } catch (error) {
         console.error("Speech processing error:", error);
 
-        res.status(500).send("Error processing speech");
+        res.status(500).send(`
+            <Response>
+                <Say>
+                    I'm sorry, something went wrong.
+                    Please try again later.
+                </Say>
+            </Response>
+        `);
     }
 });
 
