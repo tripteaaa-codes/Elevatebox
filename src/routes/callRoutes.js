@@ -49,4 +49,51 @@ router.post("/start", async (req, res) => {
     }
 });
 
+router.post("/twiml", (req, res) => {
+    res.type("text/xml");
+
+    res.send(`
+        <Response>
+            <Gather
+                input="speech"
+                action="${process.env.PUBLIC_URL}/api/call/process"
+                method="POST"
+                speechTimeout="auto"
+            >
+                <Say>
+                    Hello! This is the ElevateBox AI sales assistant.
+                    How can I help you today?
+                </Say>
+            </Gather>
+
+            <Say>
+                I didn't hear anything. Goodbye!
+            </Say>
+        </Response>
+    `);
+});
+
+router.post("/process", async (req, res) => {
+    try {
+        const speech = req.body.SpeechResult;
+
+        console.log("Customer said:", speech);
+
+        res.type("text/xml");
+
+        res.send(`
+            <Response>
+                <Say>
+                    You said: ${speech}
+                </Say>
+            </Response>
+        `);
+
+    } catch (error) {
+        console.error("Speech processing error:", error);
+
+        res.status(500).send("Error processing speech");
+    }
+});
+
 module.exports = router;

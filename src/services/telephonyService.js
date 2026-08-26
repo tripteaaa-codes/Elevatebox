@@ -3,15 +3,20 @@ const twilio = require("twilio");
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
+const publicUrl = process.env.PUBLIC_URL;
 
 const client = twilio(accountSid, authToken);
 
 const placeCall = async (phoneNumber) => {
     try {
+        if (!publicUrl) {
+            throw new Error("PUBLIC_URL is not configured in .env");
+        }
+
         const call = await client.calls.create({
             from: twilioPhoneNumber,
             to: phoneNumber,
-            url: "http://demo.twilio.com/docs/voice.xml"
+            url: `${publicUrl}/api/call/twiml`
         });
 
         console.log("Call created:", call.sid);
