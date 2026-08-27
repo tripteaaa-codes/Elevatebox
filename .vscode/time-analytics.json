@@ -1,21 +1,21 @@
 {
   "version": "1.0",
   "project": {
-    "totalFocusTime": 19040522,
-    "totalActiveTime": 1857721
+    "totalFocusTime": 23428571,
+    "totalActiveTime": 2091300
   },
   "files": {
     "src/server.js": {
       "pending": 283995,
-      "focus": 1261938
+      "focus": 1988752
     },
     ".env": {
-      "pending": 33805,
-      "focus": 980260
+      "pending": 40440,
+      "focus": 1401824
     },
     ".gitignore": {
       "pending": 13563,
-      "focus": 53756
+      "focus": 100087
     },
     "README.md": {
       "pending": 0,
@@ -23,7 +23,7 @@
     },
     "src/routes/callRoutes.js": {
       "pending": 818535,
-      "focus": 2207073
+      "focus": 2237179
     },
     "src/routes/leadRoutes.js": {
       "pending": 0,
@@ -78,8 +78,8 @@
       "focus": 16063
     },
     "src/ai/conversationManager.js": {
-      "pending": 0,
-      "focus": 12739
+      "pending": 226944,
+      "focus": 495499
     },
     "src/models/Lead.js": {
       "pending": 0,
