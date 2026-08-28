@@ -1,17 +1,17 @@
 {
   "version": "1.0",
   "project": {
-    "totalFocusTime": 23428571,
-    "totalActiveTime": 2091300
+    "totalFocusTime": 26228569,
+    "totalActiveTime": 2103756
   },
   "files": {
     "src/server.js": {
       "pending": 283995,
-      "focus": 1988752
+      "focus": 2000351
     },
     ".env": {
-      "pending": 40440,
-      "focus": 1401824
+      "pending": 41975,
+      "focus": 1479370
     },
     ".gitignore": {
       "pending": 13563,
@@ -46,8 +46,8 @@
       "focus": 22788
     },
     "src/services/telephonyService.js": {
-      "pending": 394786,
-      "focus": 2173677
+      "pending": 405707,
+      "focus": 2383306
     },
     "src/services/speechService.js": {
       "pending": 0,
