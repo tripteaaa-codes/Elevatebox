@@ -1,37 +1,73 @@
-const { generateResponse } = require("../services/aiService");
-
 const conversations = new Map();
 
-const getResponse = async (callSid, userMessage) => {
-    if (!conversations.has(callSid)) {
-        conversations.set(callSid, []);
+function createConversation(callSid, phoneNumber) {
+    const conversation = {
+        callSid,
+        phoneNumber,
+
+        language: "en",
+        stage: "intro",
+
+        businessType: null,
+        productCount: null,
+        budget: null,
+        timeline: null,
+        features: [],
+
+        message: [],
+
+        leadScore: 0,
+        leadStatus: "Cold",
+
+        callbackRequested: false,
+        callbackTime: null
+    };
+
+    conversations.set(callSid, conversation);
+
+    return conversations;
+}
+
+function getConversation(callSid) {
+    return conversations.get(callSid);
+}
+
+function updateConversation(callSid, updates) {
+    const conversation = conversations.get(callSid);
+
+    if(!conversation) {
+        return null;
     }
 
-    const history = conversations.get(callSid);
+    Object.assign(conversation, updates);
 
-    // Store customer message
-    history.push({
-        role: "user",
-        message: userMessage
+    return conversation;
+}
+
+function addMessage(callSid, role, text) {
+    const conversation = conversations.get(callSid);
+
+    if(!conversation) {
+        return null;
+    }
+
+    conversation.message.push({
+        role,
+        text,
+        timestamp: new Date()
     });
 
-    // Generate AI response
-    const aiResponse = await generateResponse(userMessage);
+    return conversation;
+}
 
-    // Store AI response
-    history.push({
-        role: "assistant",
-        message: aiResponse
-    });
-
-    return aiResponse;
-};
-
-const clearConversation = (callSid) => {
+function deleteConversation(callSid) {
     conversations.delete(callSid);
-};
+}
 
 module.exports = {
-    getResponse,
-    clearConversation
+    createConversation,
+    getConversation,
+    updateConversation,
+    addMessage,
+    deleteConversation
 };

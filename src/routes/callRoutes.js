@@ -4,7 +4,19 @@ const router = express.Router();
 
 const { placeCall } = require("../services/telephonyService");
 
-const publicUrl = process.env.PUBLIC_URL;
+const {
+    createConversation,
+    getConversation,
+    addMessage,
+    updateConversation
+} = require("../ai/conversationManager");
+
+const { generateResponse } = require("../services/aiService");
+
+
+// =====================================================
+// START CALL
+// =====================================================
 
 router.post("/start", async (req, res) => {
 
@@ -13,12 +25,10 @@ router.post("/start", async (req, res) => {
         const { phoneNumber } = req.body;
 
         if (!phoneNumber) {
-
             return res.status(400).json({
                 success: false,
                 message: "Phone number is required"
             });
-
         }
 
         const result = await placeCall(phoneNumber);
@@ -28,8 +38,13 @@ router.post("/start", async (req, res) => {
             console.error("Call failed:", result);
 
             return res.status(500).json(result);
-
         }
+
+        // Create conversation after Twilio creates the call
+        createConversation(
+            result.callSid,
+            phoneNumber
+        );
 
         res.status(200).json(result);
 
@@ -42,15 +57,39 @@ router.post("/start", async (req, res) => {
             message: "Call route failed",
             error: error.message
         });
-
     }
 
 });
+
+
+// =====================================================
+// TWILIO TWIML
+// =====================================================
 
 router.post("/twiml", (req, res) => {
 
     console.log("Twilio requested TwiML");
 
+    const callSid = req.body.CallSid;
+
+    console.log("Call SID:", callSid);
+
+    // Make sure conversation exists
+    let conversation = getConversation(callSid);
+
+    if (!conversation) {
+        conversation = createConversation(
+            callSid,
+            req.body.To
+        );
+    }
+
+    addMessage(
+        callSid,
+        "assistant",
+        "Hello! I'm calling from ElevateBox. We help businesses build e-commerce websites. Are you currently looking to sell your products online?"
+    );
+
     res.type("text/xml");
 
     res.send(`
@@ -58,19 +97,21 @@ router.post("/twiml", (req, res) => {
 
             <Gather
                 input="speech"
-                action="${publicUrl}/api/call/process"
+                action="${process.env.PUBLIC_URL}/api/call/process"
                 method="POST"
                 speechTimeout="auto"
+                language="en-IN"
             >
 
-                <Say>
-                    Hello! This is the ElevateBox AI sales assistant.
-                    Are you looking for a new e-commerce website?
+                <Say language="en-IN">
+                    Hello! I'm calling from ElevateBox.
+                    We help businesses build e-commerce websites.
+                    Are you currently looking to sell your products online?
                 </Say>
 
             </Gather>
 
-            <Say>
+            <Say language="en-IN">
                 I didn't hear a response. Goodbye!
             </Say>
 
@@ -79,44 +120,124 @@ router.post("/twiml", (req, res) => {
 
 });
 
-router.post("/process", (req, res) => {
 
-    const speech = req.body.SpeechResult || "";
+// =====================================================
+// PROCESS CUSTOMER SPEECH
+// =====================================================
 
-    console.log("Customer speech:", speech);
+router.post("/process", async (req, res) => {
 
-    res.type("text/xml");
+    try {
 
-    res.send(`
-        <Response>
+        const speech = req.body.SpeechResult || "";
+        const callSid = req.body.CallSid;
 
-            <Say>
-                Thanks for your response.
-                You said: ${speech}
-            </Say>
+        console.log("Customer speech:", speech);
+        console.log("Call SID:", callSid);
 
-            <Gather
-                input="speech"
-                action="${publicUrl}/api/call/process"
-                method="POST"
-                speechTimeout="auto"
-            >
+        if (!callSid) {
 
-                <Say>
-                    What type of products do you sell?
+            return res.status(400).send(`
+                <Response>
+                    <Say>
+                        Sorry, something went wrong with the call.
+                    </Say>
+                </Response>
+            `);
+
+        }
+
+        // Get conversation
+        let conversation = getConversation(callSid);
+
+        if (!conversation) {
+
+            conversation = createConversation(
+                callSid,
+                req.body.From
+            );
+        }
+
+        // Save customer message
+        addMessage(
+            callSid,
+            "customer",
+            speech
+        );
+
+        // Generate AI response
+        const response = await generateResponse(
+            speech,
+            conversation
+        );
+
+        console.log("AI response:", response);
+
+        // Save AI response
+        addMessage(
+            callSid,
+            "assistant",
+            response
+        );
+
+        // Update conversation
+        updateConversation(callSid, {
+            lastUserMessage: speech,
+            lastAssistantMessage: response
+        });
+
+        res.type("text/xml");
+
+        res.send(`
+            <Response>
+
+                <Gather
+                    input="speech"
+                    action="${process.env.PUBLIC_URL}/api/call/process"
+                    method="POST"
+                    speechTimeout="auto"
+                    language="en-IN"
+                >
+
+                    <Say language="en-IN">
+                        ${escapeXml(response)}
+                    </Say>
+
+                </Gather>
+
+                <Say language="en-IN">
+                    Thank you for your time. Have a wonderful day!
                 </Say>
 
-            </Gather>
+            </Response>
+        `);
 
-            <Say>
-                I didn't hear a response. Goodbye!
-            </Say>
+    } catch (error) {
 
-        </Response>
-    `);
+        console.error("Speech processing error:", error);
+
+        res.status(500).send(`
+            <Response>
+                <Say>
+                    I'm sorry, there was a technical problem.
+                    Thank you for your time.
+                </Say>
+            </Response>
+        `);
+
+    }
 
 });
+
+function escapeXml(text) {
+
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&apos;");
+}
 
 
 module.exports = router;
-

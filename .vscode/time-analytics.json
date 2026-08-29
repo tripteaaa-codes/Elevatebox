@@ -1,13 +1,13 @@
 {
   "version": "1.0",
   "project": {
-    "totalFocusTime": 29456496,
-    "totalActiveTime": 2396252
+    "totalFocusTime": 33748028,
+    "totalActiveTime": 3158573
   },
   "files": {
     "src/server.js": {
-      "pending": 285547,
-      "focus": 2042392
+      "pending": 288612,
+      "focus": 2077333
     },
     ".env": {
       "pending": 45176,
@@ -15,23 +15,15 @@
     },
     ".gitignore": {
       "pending": 13563,
-      "focus": 100087
+      "focus": 129675
     },
     "README.md": {
       "pending": 0,
       "focus": 39591
     },
     "src/routes/callRoutes.js": {
-      "pending": 1106278,
-      "focus": 2791199
-    },
-    "src/routes/leadRoutes.js": {
-      "pending": 0,
-      "focus": 2604
-    },
-    "src/routes/webhookRoutes.js": {
-      "pending": 0,
-      "focus": 60842
+      "pending": 1109359,
+      "focus": 2873379
     },
     "src/controllers/callController.js": {
       "pending": 0,
@@ -49,53 +41,33 @@
       "pending": 405707,
       "focus": 2383306
     },
-    "src/services/speechService.js": {
-      "pending": 0,
-      "focus": 16365
-    },
     "src/services/aiService.js": {
-      "pending": 0,
-      "focus": 16734
+      "pending": 399956,
+      "focus": 1126955
     },
     "src/services/whatsappService.js": {
       "pending": 0,
       "focus": 22527
     },
-    "src/services/schedularServices.js": {
-      "pending": 0,
-      "focus": 21439
-    },
-    "src/services/followupService.js": {
-      "pending": 0,
-      "focus": 53092
-    },
     "src/ai/prompts.js": {
-      "pending": 0,
-      "focus": 18132
+      "pending": 1030,
+      "focus": 42377
     },
     "src/ai/leadClassifier.js": {
       "pending": 0,
       "focus": 16063
     },
     "src/ai/conversationManager.js": {
-      "pending": 226944,
-      "focus": 495499
+      "pending": 582133,
+      "focus": 1591718
     },
     "src/models/Lead.js": {
       "pending": 0,
       "focus": 12584
     },
-    "src/utils/logger.js": {
-      "pending": 0,
-      "focus": 14753
-    },
-    "src/utils/dataParser.js": {
-      "pending": 0,
-      "focus": 27740
-    },
     "package.json": {
       "pending": 29476,
-      "focus": 68702
+      "focus": 115930
     },
     "src/testTwilio.js": {
       "pending": 3490,
@@ -104,6 +76,30 @@
     "src/testVoice.js": {
       "pending": 280071,
       "focus": 996716
+    },
+    "src/routes/whatsappRoutes.js": {
+      "pending": 0,
+      "focus": 76988
+    },
+    "src/services/leadService.js": {
+      "pending": 0,
+      "focus": 31381
+    },
+    "src/services/conversationService.js": {
+      "pending": 0,
+      "focus": 55397
+    },
+    "src/services/callbackService.js": {
+      "pending": 0,
+      "focus": 10099
+    },
+    "src/utils/languageUtils.js": {
+      "pending": 0,
+      "focus": 122109
     }
+  },
+  "deleted": {
+    "active": 0,
+    "focus": 78250
   }
 }
