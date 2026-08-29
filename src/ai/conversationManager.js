@@ -14,7 +14,7 @@ function createConversation(callSid, phoneNumber) {
         timeline: null,
         features: [],
 
-        message: [],
+        messages: [],
 
         leadScore: 0,
         leadStatus: "Cold",
@@ -25,7 +25,7 @@ function createConversation(callSid, phoneNumber) {
 
     conversations.set(callSid, conversation);
 
-    return conversations;
+    return conversation;
 }
 
 function getConversation(callSid) {
@@ -51,7 +51,7 @@ function addMessage(callSid, role, text) {
         return null;
     }
 
-    conversation.message.push({
+    conversation.messages.push({
         role,
         text,
         timestamp: new Date()
