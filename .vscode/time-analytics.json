@@ -1,8 +1,8 @@
 {
   "version": "1.0",
   "project": {
-    "totalFocusTime": 40107361,
-    "totalActiveTime": 3631359
+    "totalFocusTime": 40579174,
+    "totalActiveTime": 3634502
   },
   "files": {
     "src/server.js": {
@@ -10,8 +10,8 @@
       "focus": 2077333
     },
     ".env": {
-      "pending": 52462,
-      "focus": 1781363
+      "pending": 55605,
+      "focus": 1851006
     },
     ".gitignore": {
       "pending": 13563,
@@ -23,7 +23,7 @@
     },
     "src/routes/callRoutes.js": {
       "pending": 1215234,
-      "focus": 3396051
+      "focus": 3429830
     },
     "src/controllers/callController.js": {
       "pending": 0,
@@ -75,7 +75,7 @@
     },
     "src/testVoice.js": {
       "pending": 280071,
-      "focus": 996716
+      "focus": 997142
     },
     "src/routes/whatsappRoutes.js": {
       "pending": 0,
