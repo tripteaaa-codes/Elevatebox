@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "project": {
-    "totalFocusTime": 48827483,
+    "totalFocusTime": 48853429,
     "totalActiveTime": 3936358
   },
   "files": {
@@ -107,7 +107,7 @@
     },
     "src/services/leadStore.js": {
       "pending": 10160,
-      "focus": 91727
+      "focus": 117673
     }
   },
   "deleted": {
