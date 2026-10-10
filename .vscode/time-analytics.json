@@ -1,8 +1,8 @@
 {
   "version": "1.0",
   "project": {
-    "totalFocusTime": 40605356,
-    "totalActiveTime": 3634502
+    "totalFocusTime": 48827483,
+    "totalActiveTime": 3936358
   },
   "files": {
     "src/server.js": {
@@ -11,7 +11,7 @@
     },
     ".env": {
       "pending": 55605,
-      "focus": 1877188
+      "focus": 2210969
     },
     ".gitignore": {
       "pending": 13563,
@@ -22,8 +22,8 @@
       "focus": 39591
     },
     "src/routes/callRoutes.js": {
-      "pending": 1215234,
-      "focus": 3429830
+      "pending": 1221413,
+      "focus": 3683251
     },
     "src/controllers/callController.js": {
       "pending": 0,
@@ -42,8 +42,8 @@
       "focus": 2383306
     },
     "src/services/aiService.js": {
-      "pending": 411623,
-      "focus": 1218894
+      "pending": 427635,
+      "focus": 1852551
     },
     "src/services/whatsappService.js": {
       "pending": 0,
@@ -59,7 +59,7 @@
     },
     "src/ai/conversationManager.js": {
       "pending": 585761,
-      "focus": 1771482
+      "focus": 1832436
     },
     "src/models/Lead.js": {
       "pending": 0,
@@ -91,11 +91,23 @@
     },
     "src/services/callbackService.js": {
       "pending": 0,
-      "focus": 10099
+      "focus": 12840
     },
     "src/utils/languageUtils.js": {
       "pending": 0,
       "focus": 122109
+    },
+    "src/ai/languageDetector.js": {
+      "pending": 267828,
+      "focus": 567604
+    },
+    "data/leads.json": {
+      "pending": 1677,
+      "focus": 55489
+    },
+    "src/services/leadStore.js": {
+      "pending": 10160,
+      "focus": 91727
     }
   },
   "deleted": {
