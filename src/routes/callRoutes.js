@@ -12,6 +12,7 @@ const {
 } = require("../ai/conversationManager");
 
 const { detectLanguage } = require("../ai/languageDetector");
+const { saveLead } = require("../services/leadStore");
 const { generateResponse } = require("../services/aiService");
 
 const languageConfig = {
@@ -180,8 +181,9 @@ router.post("/process", async (req, res) => {
         }
 
         if (!speech.trim()) {
-            const config = getLanguageConfig(conversation.language);
+            saveLead(conversation);
 
+            const config = getLanguageConfig(conversation.language);
             return res.type("text/xml").send(`
 <Response>
     <Say language="${config.locale}">${escapeXml(config.goodbye)}</Say>
@@ -224,7 +226,12 @@ router.post("/process", async (req, res) => {
             leadStatus: classification.status
         });
 
+        conversation = getConversation(callSid);
+
+        saveLead(conversation);
+
         console.log("Lead classification:", classification);
+        console.log("Lead saved successfully:", callSid);
 
         res.type("text/xml");
 
