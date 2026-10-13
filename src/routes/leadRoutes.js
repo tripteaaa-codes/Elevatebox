@@ -1,3 +1,8 @@
+const express = require("express");
+const router = express.Router();
+
+const { getAllLeads, updateLead } = require("../services/leadStore");
+
 router.get("/", (req, res) => {
     try {
         let leads = getAllLeads();
@@ -34,7 +39,12 @@ router.get("/", (req, res) => {
             leads = leads.filter(lead => lead.callbackRequested !== true);
         }
 
-        const allowedSortFields = ["createdAt", "leadScore", "businessType"];
+        const allowedSortFields = [
+            "createdAt",
+            "leadScore",
+            "businessType"
+        ];
+
         const allowedOrders = ["asc", "desc"];
 
         if (!allowedSortFields.includes(sortBy)) {
@@ -88,7 +98,10 @@ router.get("/", (req, res) => {
         const total = leads.length;
         const totalPages = Math.ceil(total / pageSize);
         const startIndex = (pageNumber - 1) * pageSize;
-        const paginatedLeads = leads.slice(startIndex, startIndex + pageSize);
+        const paginatedLeads = leads.slice(
+            startIndex,
+            startIndex + pageSize
+        );
 
         return res.status(200).json({
             success: true,
@@ -109,3 +122,178 @@ router.get("/", (req, res) => {
         });
     }
 });
+
+router.patch("/:id/callback", (req, res) => {
+    try {
+        const { id } = req.params;
+        const { callbackTime } = req.body;
+
+        if (typeof callbackTime !== "string" || !callbackTime.trim()) {
+            return res.status(400).json({
+                success: false,
+                message: "Callback time is required"
+            });
+        }
+
+        const parsedDate = new Date(callbackTime);
+
+        if (Number.isNaN(parsedDate.getTime())) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid callback date"
+            });
+        }
+
+        if (parsedDate <= new Date()) {
+            return res.status(400).json({
+                success: false,
+                message: "Callback time must be in the future"
+            });
+        }
+
+        const updatedLead = updateLead(id, {
+            callbackRequested: true,
+            callbackTime: parsedDate.toISOString()
+        });
+
+        if (!updatedLead) {
+            return res.status(404).json({
+                success: false,
+                message: "Lead not found"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Callback scheduled successfully",
+            lead: updatedLead
+        });
+    } catch (error) {
+        console.error("Error scheduling callback:", error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to schedule callback"
+        });
+    }
+});
+
+router.delete("/:id/callback", (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const updatedLead = updateLead(id, {
+            callbackRequested: false,
+            callbackTime: null
+        });
+
+        if (!updatedLead) {
+            return res.status(404).json({
+                success: false,
+                message: "Lead not found"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Callback cancelled successfully",
+            lead: updatedLead
+        });
+    } catch (error) {
+        console.error("Error cancelling callback:", error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to cancel callback"
+        });
+    }
+});
+
+router.patch("/:id/status", (req, res) => {
+    try {
+        const { id } = req.params;
+        const { leadStatus } = req.body;
+
+        const allowedStatuses = [
+            "New",
+            "Contacted",
+            "Interested",
+            "Converted",
+            "Lost"
+        ];
+
+        if (typeof leadStatus !== "string") {
+            return res.status(400).json({
+                success: false,
+                message: "Lead status is required"
+            });
+        }
+
+        const normalizedStatus = allowedStatuses.find(
+            status =>
+                status.toLowerCase() === leadStatus.trim().toLowerCase()
+        );
+
+        if (!normalizedStatus) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid lead status",
+                allowedStatuses
+            });
+        }
+
+        const updatedLead = updateLead(id, {
+            leadStatus: normalizedStatus
+        });
+
+        if (!updatedLead) {
+            return res.status(404).json({
+                success: false,
+                message: "Lead not found"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Lead status updated successfully",
+            lead: updatedLead
+        });
+    } catch (error) {
+        console.error("Error updating lead status:", error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to update lead status"
+        });
+    }
+});
+
+router.get("/:id", (req, res) => {
+    try {
+        const { id } = req.params;
+        const leads = getAllLeads();
+
+        const lead = leads.find(item => String(item.id) === String(id));
+
+        if (!lead) {
+            return res.status(404).json({
+                success: false,
+                message: "Lead not found"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            lead
+        });
+    } catch (error) {
+        console.error("Error retrieving lead:", error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to retrieve lead"
+        });
+    }
+});
+
+module.exports = router;
