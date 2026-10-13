@@ -1,15 +1,16 @@
-const express = require("express");
-const router = express.Router();
-
-const {
-    getAllLeads,
-    updateLead
-} = require("../services/leadStore");
-
 router.get("/", (req, res) => {
     try {
         let leads = getAllLeads();
-        const { status, search, callbackRequested } = req.query;
+
+        const {
+            status,
+            search,
+            callbackRequested,
+            sortBy = "createdAt",
+            order = "desc",
+            page = "1",
+            limit = "10"
+        } = req.query;
 
         if (status) {
             leads = leads.filter(
@@ -18,7 +19,7 @@ router.get("/", (req, res) => {
         }
 
         if (search) {
-            const query = search.toLowerCase();
+            const query = search.trim().toLowerCase();
 
             leads = leads.filter(lead =>
                 (lead.businessType || "").toLowerCase().includes(query) ||
@@ -29,12 +30,75 @@ router.get("/", (req, res) => {
 
         if (callbackRequested === "true") {
             leads = leads.filter(lead => lead.callbackRequested === true);
+        } else if (callbackRequested === "false") {
+            leads = leads.filter(lead => lead.callbackRequested !== true);
         }
+
+        const allowedSortFields = ["createdAt", "leadScore", "businessType"];
+        const allowedOrders = ["asc", "desc"];
+
+        if (!allowedSortFields.includes(sortBy)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid sortBy field",
+                allowedFields: allowedSortFields
+            });
+        }
+
+        if (!allowedOrders.includes(order.toLowerCase())) {
+            return res.status(400).json({
+                success: false,
+                message: "Order must be asc or desc"
+            });
+        }
+
+        const pageNumber = Number(page);
+        const pageSize = Number(limit);
+
+        if (
+            !Number.isInteger(pageNumber) ||
+            !Number.isInteger(pageSize) ||
+            pageNumber < 1 ||
+            pageSize < 1 ||
+            pageSize > 100
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Page must be positive and limit must be between 1 and 100"
+            });
+        }
+
+        const direction = order.toLowerCase() === "asc" ? 1 : -1;
+
+        leads.sort((a, b) => {
+            const first = a[sortBy];
+            const second = b[sortBy];
+
+            if (first == null && second == null) return 0;
+            if (first == null) return 1;
+            if (second == null) return -1;
+
+            if (sortBy === "leadScore") {
+                return (Number(first) - Number(second)) * direction;
+            }
+
+            return String(first).localeCompare(String(second)) * direction;
+        });
+
+        const total = leads.length;
+        const totalPages = Math.ceil(total / pageSize);
+        const startIndex = (pageNumber - 1) * pageSize;
+        const paginatedLeads = leads.slice(startIndex, startIndex + pageSize);
 
         return res.status(200).json({
             success: true,
-            total: leads.length,
-            leads
+            total,
+            page: pageNumber,
+            limit: pageSize,
+            totalPages,
+            hasNextPage: pageNumber < totalPages,
+            hasPreviousPage: pageNumber > 1,
+            leads: paginatedLeads
         });
     } catch (error) {
         console.error("Error retrieving leads:", error.message);
@@ -45,114 +109,3 @@ router.get("/", (req, res) => {
         });
     }
 });
-
-router.patch("/:id/callback", (req, res) => {
-    try {
-        const { callbackTime } = req.body;
-
-        if (!callbackTime || typeof callbackTime !== "string") {
-            return res.status(400).json({
-                success: false,
-                message: "Please provide a callback date and time"
-            });
-        }
-
-        const parsedDate = new Date(callbackTime);
-
-        if (Number.isNaN(parsedDate.getTime())) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid callback date and time"
-            });
-        }
-
-        if (parsedDate <= new Date()) {
-            return res.status(400).json({
-                success: false,
-                message: "Callback time must be in the future"
-            });
-        }
-
-        const lead = updateLead(req.params.id, {
-            callbackRequested: true,
-            callbackTime: parsedDate.toISOString()
-        });
-
-        if (!lead) {
-            return res.status(404).json({
-                success: false,
-                message: "Lead not found"
-            });
-        }
-
-        return res.status(200).json({
-            success: true,
-            message: "Callback scheduled successfully",
-            lead
-        });
-    } catch (error) {
-        console.error("Error scheduling callback:", error.message);
-
-        return res.status(500).json({
-            success: false,
-            message: "Unable to schedule callback"
-        });
-    }
-});
-
-router.delete("/:id/callback", (req, res) => {
-    try {
-        const lead = updateLead(req.params.id, {
-            callbackRequested: false,
-            callbackTime: null
-        });
-
-        if (!lead) {
-            return res.status(404).json({
-                success: false,
-                message: "Lead not found"
-            });
-        }
-
-        return res.status(200).json({
-            success: true,
-            message: "Callback cancelled successfully",
-            lead
-        });
-    } catch (error) {
-        console.error("Error cancelling callback:", error.message);
-
-        return res.status(500).json({
-            success: false,
-            message: "Unable to cancel callback"
-        });
-    }
-});
-
-router.get("/:id", (req, res) => {
-    try {
-        const leads = getAllLeads();
-        const lead = leads.find(item => item.id === req.params.id);
-
-        if (!lead) {
-            return res.status(404).json({
-                success: false,
-                message: "Lead not found"
-            });
-        }
-
-        return res.status(200).json({
-            success: true,
-            lead
-        });
-    } catch (error) {
-        console.error("Error retrieving lead:", error.message);
-
-        return res.status(500).json({
-            success: false,
-            message: "Unable to retrieve lead"
-        });
-    }
-});
-
-module.exports = router;
