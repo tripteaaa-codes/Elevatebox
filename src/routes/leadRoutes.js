@@ -1,26 +1,34 @@
 const express = require("express");
 const router = express.Router();
-const { getAllLeads } = require("../services/leadStore");
+
+const {
+    getAllLeads,
+    updateLead
+} = require("../services/leadStore");
 
 router.get("/", (req, res) => {
     try {
         let leads = getAllLeads();
+        const { status, search, callbackRequested } = req.query;
 
-        const { status, search }  = req.query;
-
-        if(status) {
+        if (status) {
             leads = leads.filter(
                 lead => lead.leadStatus?.toLowerCase() === status.toLowerCase()
             );
         }
-         if(search) {
+
+        if (search) {
             const query = search.toLowerCase();
 
             leads = leads.filter(lead =>
                 (lead.businessType || "").toLowerCase().includes(query) ||
                 (lead.phoneNumber || "").toLowerCase().includes(query) ||
-                (lead.budget || "").toLowerCase().includes(query) 
+                (lead.budget || "").toLowerCase().includes(query)
             );
+        }
+
+        if (callbackRequested === "true") {
+            leads = leads.filter(lead => lead.callbackRequested === true);
         }
 
         return res.status(200).json({
@@ -33,7 +41,90 @@ router.get("/", (req, res) => {
 
         return res.status(500).json({
             success: false,
-            message: "Unable to retrieve leads",
+            message: "Unable to retrieve leads"
+        });
+    }
+});
+
+router.patch("/:id/callback", (req, res) => {
+    try {
+        const { callbackTime } = req.body;
+
+        if (!callbackTime || typeof callbackTime !== "string") {
+            return res.status(400).json({
+                success: false,
+                message: "Please provide a callback date and time"
+            });
+        }
+
+        const parsedDate = new Date(callbackTime);
+
+        if (Number.isNaN(parsedDate.getTime())) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid callback date and time"
+            });
+        }
+
+        if (parsedDate <= new Date()) {
+            return res.status(400).json({
+                success: false,
+                message: "Callback time must be in the future"
+            });
+        }
+
+        const lead = updateLead(req.params.id, {
+            callbackRequested: true,
+            callbackTime: parsedDate.toISOString()
+        });
+
+        if (!lead) {
+            return res.status(404).json({
+                success: false,
+                message: "Lead not found"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Callback scheduled successfully",
+            lead
+        });
+    } catch (error) {
+        console.error("Error scheduling callback:", error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to schedule callback"
+        });
+    }
+});
+
+router.delete("/:id/callback", (req, res) => {
+    try {
+        const lead = updateLead(req.params.id, {
+            callbackRequested: false,
+            callbackTime: null
+        });
+
+        if (!lead) {
+            return res.status(404).json({
+                success: false,
+                message: "Lead not found"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Callback cancelled successfully",
+            lead
+        });
+    } catch (error) {
+        console.error("Error cancelling callback:", error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to cancel callback"
         });
     }
 });
@@ -41,10 +132,7 @@ router.get("/", (req, res) => {
 router.get("/:id", (req, res) => {
     try {
         const leads = getAllLeads();
-
-        const lead = leads.find(
-            item => item.id === req.params.id
-        );
+        const lead = leads.find(item => item.id === req.params.id);
 
         if (!lead) {
             return res.status(404).json({
@@ -62,7 +150,7 @@ router.get("/:id", (req, res) => {
 
         return res.status(500).json({
             success: false,
-            message: "Unable to retrieve lead",
+            message: "Unable to retrieve lead"
         });
     }
 });
