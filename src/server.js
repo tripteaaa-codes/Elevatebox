@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const leadRoutes = require("./routes/leadRoutes");
 const analyticsRoutes = require("./routes/analyticsRoutes");
 const activityRoutes = require("./routes/activityRoutes");
+const activityAnalyticsRoutes = require("./routes/activityAnalyticsRoutes");
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use("/api/call", callRoutes);
 app.use("/api/leads", leadRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/activities", activityRoutes);
+app.use("/api/activity-analytics", activityAnalyticsRoutes);
 
 const PORT = process.env.PORT || 5000;
 
