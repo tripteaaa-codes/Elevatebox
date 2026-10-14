@@ -3,6 +3,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const leadRoutes = require("./routes/leadRoutes");
 const analyticsRoutes = require("./routes/analyticsRoutes");
+const activityRoutes = require("./routes/activityRoutes");
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ const callRoutes = require("./routes/callRoutes");
 app.use("/api/call", callRoutes);
 app.use("/api/leads", leadRoutes);
 app.use("/api/analytics", analyticsRoutes);
+app.use("/api/activities", activityRoutes);
 
 const PORT = process.env.PORT || 5000;
 
